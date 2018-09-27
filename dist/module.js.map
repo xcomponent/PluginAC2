@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/module.js"],"names":["AC2Ctrl"],"mappings":";;;;;;;;AAAQA,a,SAAAA,O;;;2BAGNA,O","file":"module.js","sourcesContent":["import {AC2Ctrl} from './main';\r\n\r\nexport {\r\n  AC2Ctrl as PanelCtrl\r\n};\r\n"]}
