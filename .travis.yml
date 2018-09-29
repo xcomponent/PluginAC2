@@ -10,4 +10,4 @@ os:
 install:
 - yarn install
 script:
-- grun
+- grunt
