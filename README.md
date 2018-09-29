@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/xcomponent/grafana-plugin-ac2.svg?branch=master)](https://travis-ci.org/xcomponent/grafana-plugin-ac2)
+
 ## AC2 Panel Plugin for Grafana
 * AC2 Panel Plugin allows AC2 map visualization
 * No need to create a grafana datasource
