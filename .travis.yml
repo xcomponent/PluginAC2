@@ -8,8 +8,8 @@ branches:
 os:
 - linux
 before_install:
-- yarn global add -g grunt-cli
+- npm install -g grunt-cli
 install:
-- yarn install
+- npm install
 script:
 - grunt
