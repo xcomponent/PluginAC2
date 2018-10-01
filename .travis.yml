@@ -8,7 +8,7 @@ branches:
 os:
 - linux
 before_install:
-- yarn global install -g grunt-cli
+- yarn global add -g grunt-cli
 install:
 - yarn install
 script:
