@@ -5,4 +5,4 @@
 * No need to create a grafana datasource
 * Fill the settings form with the right information to view the AC2 map application
 
-<img src="./src/img/plugin_screen.png" alt="drawing" width="90%"/>
+<img src="./src/assets/plugin_screen.png" alt="drawing" width="90%"/>
