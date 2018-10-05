@@ -7,7 +7,7 @@ module.exports = {
   target: 'node',
   context: __dirname + "/src",
   entry: './module.ts',
-  watch: true,
+  watch: false,
   output: {
     filename: "module.js",
     path: path.resolve(__dirname, 'dist'),
