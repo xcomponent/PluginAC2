@@ -1,5 +1,5 @@
 {
-  "name": "grafana-progress-list-plugin",
+  "name": "grafana-ac2-plugin",
   "version": "1.0.1",
   "description": "AC2 panel for grafana.",
   "main": "src/module.js",
