@@ -130,16 +130,16 @@ var Ctrl = function (_sdk_1$PanelCtrl) {
                 layout: $(go.TreeLayout, { angle: 90, sorting: go.TreeLayout.SortingAscending }),
                 maxSelectionCount: 1
             });
-            var myNodeTemplate = $(go.Node, "Vertical", { locationSpot: go.Spot.Center, locationObjectName: "SHAPE" }, new go.Binding("text", "key", go.Binding.toString), $(go.Shape, "Rectangle", { desiredSize: new go.Size(30, 30), name: "SHAPE", portId: "" }, new go.Binding("fill", "color"), { stroke: null }), $(go.TextBlock, { margin: 5, stroke: "rgb(220,220,220)" }, new go.Binding("text", "key")));
+            var myNodeTemplate = $(go.Node, "Vertical", { locationSpot: go.Spot.Center, locationObjectName: "SHAPE" }, new go.Binding("text", "key", go.Binding.toString), $(go.Shape, "Rectangle", { desiredSize: new go.Size(30, 30), name: "SHAPE", portId: "" }, new go.Binding("fill", "color"), { stroke: null }), $(go.TextBlock, { margin: 5, stroke: "rgb(220,220,220)", font: "Bold 12px Sans-Serif" }, new go.Binding("text", "key")));
             this.myFullDiagram.nodeTemplate = myNodeTemplate;
-            var groupTemplate = $(go.Group, "Auto", $(go.Shape, "Rectangle", { fill: "gray" }), $(go.Panel, "Vertical", {
-                margin: 5,
-                defaultAlignment: go.Spot.Center
-            }, $(go.TextBlock, { alignment: go.Spot.Center, font: "Bold 12pt Sans-Serif" }), $(go.Placeholder), { padding: 5 }));
-            this.myFullDiagram.groupTemplate = groupTemplate;
-            this.myFullDiagram.linkTemplate = $(go.Link, { toShortLength: 1 }, $(go.Shape, { strokeWidth: 1, "stroke": "gray" }), $(go.Shape, { toArrow: "Standard", stroke: null, fill: "gray" }), {
-                toolTip: $(go.Adornment, "Auto", $(go.Shape, { fill: "#FFFFCC" }), $(go.TextBlock, { margin: 1 }))
-            });
+            this.myFullDiagram.groupTemplate = $(go.Group, "Auto", {
+                layout: $(go.TreeLayout, { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false }),
+                isSubGraphExpanded: true
+            }, $(go.Shape, "Rectangle", { fill: null, stroke: "gray", strokeWidth: 2 }), $(go.Panel, "Vertical", { defaultAlignment: go.Spot.Center, margin: 4 }, $(go.Panel, "Horizontal", { defaultAlignment: go.Spot.Top }, $(go.TextBlock, { font: "Bold 12px Sans-Serif", alignment: go.Spot.Center, margin: 4, stroke: "white" }, new go.Binding("text", "text"))),
+            // create a placeholder to represent the area where the contents of the group are
+            $(go.Placeholder, { padding: new go.Margin(0, 10) })) // end Vertical Panel
+            ); // end Group
+            this.myFullDiagram.linkTemplate = $(go.Link, { corner: 10 }, $(go.Shape, { strokeWidth: 1, stroke: "white" }), $(go.Shape, { toArrow: "OpenTriangle", fill: "white", stroke: "white" }));
             clearInterval(this.setupDiagramTimer);
             this.setupDiagramTimer = setInterval(function () {
                 _this2.setupDiagram();
@@ -166,8 +166,8 @@ var Ctrl = function (_sdk_1$PanelCtrl) {
             }).then(function (response) {
                 return axios.get(urlBase + "/api/Application?application=" + _this3.panel.application + "&api_key=" + response.data);
             }).then(function (response) {
-                console.log(response.data);
                 var nodeDataArray = [];
+                var linkDataArray = [];
                 var groups = [];
                 response.data.forEach(function (component) {
                     if (groups.indexOf(component.GroupName) === -1) {
@@ -182,12 +182,19 @@ var Ctrl = function (_sdk_1$PanelCtrl) {
                         "Starting": "Orange"
                     };
                     node.color = stateColor[component.State];
+                    node.group = component.GroupName + "_group";
                     if (component.Parents.length > 0) {
-                        node.parent = component.Parents[0];
+                        linkDataArray.push({ from: component.Parents[0], to: node.key });
                     }
                     nodeDataArray.push(node);
                 });
-                _this3.myFullDiagram.model = new go.TreeModel(nodeDataArray);
+                groups.forEach(function (group) {
+                    nodeDataArray.push({ key: group + "_group", text: group, isGroup: true });
+                });
+                console.log(nodeDataArray);
+                console.log(linkDataArray);
+                _this3.myFullDiagram.model.nodeDataArray = nodeDataArray;
+                _this3.myFullDiagram.model.linkDataArray = linkDataArray;
             }).catch(function (error) {
                 console.log(error);
             });

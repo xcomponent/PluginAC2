@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+<script>
+    var timeRange = angular.element('grafana-app').injector().get('timeSrv').timeRange();
+    console.log(timeRange);
+</script>
 
 <body>
     <form>
@@ -25,10 +29,11 @@
         </div>
 
         <div class="gf-form">
-                <label class="gf-form-label width-12">Password</label>
-                <input type="password" class="input-small gf-form-input max-width-15" ng-model="ctrl.panel.password" ng-change="ctrl.inputChange()" />
-            </div>
-    
+            <label class="gf-form-label width-12">Password</label>
+            <input type="password" class="input-small gf-form-input max-width-15" ng-model="ctrl.panel.password"
+                ng-change="ctrl.inputChange()" />
+        </div>
+
         <button ng-click="ctrl.onClick()">Load</button>
     </form>
 </body>
