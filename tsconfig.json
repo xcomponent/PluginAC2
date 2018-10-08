@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "strictNullChecks": true,
-    "module": "none",
+    "module": "commonjs",
     "target": "es6",
     "rootDir": "./src"
   },

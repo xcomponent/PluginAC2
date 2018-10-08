@@ -191,8 +191,6 @@ var Ctrl = function (_sdk_1$PanelCtrl) {
                 groups.forEach(function (group) {
                     nodeDataArray.push({ key: group + "_group", text: group, isGroup: true });
                 });
-                console.log(nodeDataArray);
-                console.log(linkDataArray);
                 _this3.myFullDiagram.model.nodeDataArray = nodeDataArray;
                 _this3.myFullDiagram.model.linkDataArray = linkDataArray;
             }).catch(function (error) {

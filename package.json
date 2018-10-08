@@ -15,7 +15,6 @@
   "license": "Apache",
   "repository": "https://github.com/xcomponent/grafana-plugin-ac2",
   "devDependencies": {
-    "@types/angular": "^1.5.8",
     "@types/grafana": "git+https://git@github.com/CorpGlory/types-grafana.git",
     "@types/lodash": "^4.14.74",
     "babel-core": "^6.26.0",
@@ -24,11 +23,11 @@
     "copy-webpack-plugin": "^4.0.1",
     "loader-utils": "^1.1.0",
     "ts-loader": "^2.3.7",
-    "typescript": "^2.4.2",
+    "typescript": "^3.1.1",
     "webpack": "^3.5.6"
   },
   "dependencies": {
-    "gojs": "^1.8.31",
-    "axios": "^0.18.0"
+    "axios": "^0.18.0",
+    "gojs": "^1.8.31"
   }
 }
