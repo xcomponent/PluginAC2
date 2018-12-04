@@ -70,14 +70,25 @@ define(["app/plugins/sdk"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return /**
 "use strict";
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+var __extends = undefined && undefined.__extends || function () {
+    var _extendStatics = function extendStatics(d, b) {
+        _extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function (d, b) {
+            d.__proto__ = b;
+        } || function (d, b) {
+            for (var p in b) {
+                if (b.hasOwnProperty(p)) d[p] = b[p];
+            }
+        };
+        return _extendStatics(d, b);
+    };
+    return function (d, b) {
+        _extendStatics(d, b);
+        function __() {
+            this.constructor = d;
+        }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+}();
 Object.defineProperty(exports, "__esModule", { value: true });
 var panel_config_1 = __webpack_require__(1);
 var sdk_1 = __webpack_require__(2);
@@ -85,15 +96,10 @@ var _ = __webpack_require__(3);
 var go = __webpack_require__(5);
 var axios = __webpack_require__(6);
 __webpack_require__(7);
-
-var Ctrl = function (_sdk_1$PanelCtrl) {
-    _inherits(Ctrl, _sdk_1$PanelCtrl);
-
+var Ctrl = /** @class */function (_super) {
+    __extends(Ctrl, _super);
     function Ctrl($scope, $injector) {
-        _classCallCheck(this, Ctrl);
-
-        var _this = _possibleConstructorReturn(this, (Ctrl.__proto__ || Object.getPrototypeOf(Ctrl)).call(this, $scope, $injector));
-
+        var _this = _super.call(this, $scope, $injector) || this;
         _this.panelDefaults = {
             host: "localhost",
             port: "7890",
@@ -114,107 +120,93 @@ var Ctrl = function (_sdk_1$PanelCtrl) {
         _this.events.on('init-edit-mode', _this._onInitEditMode.bind(_this));
         return _this;
     }
-
-    _createClass(Ctrl, [{
-        key: "initDiagram",
-        value: function initDiagram() {
-            var _this2 = this;
-
-            if (window.goSamples) window.goSamples();
-            var $ = go.GraphObject.make;
-            this.myFullDiagram.div = undefined;
-            this.myFullDiagram = $(go.Diagram, "container", {
-                initialAutoScale: go.Diagram.UniformToFill,
-                maxScale: 1,
-                contentAlignment: go.Spot.Center,
-                "animationManager.isEnabled": false,
-                layout: $(go.TreeLayout, { angle: 90, sorting: go.TreeLayout.SortingAscending }),
-                maxSelectionCount: 1
-            });
-            var myNodeTemplate = $(go.Node, "Vertical", { locationSpot: go.Spot.Center, locationObjectName: "SHAPE" }, new go.Binding("text", "key", go.Binding.toString), $(go.Shape, "Rectangle", { desiredSize: new go.Size(30, 30), name: "SHAPE", portId: "" }, new go.Binding("fill", "color"), { stroke: null }), $(go.TextBlock, { margin: 5, stroke: "rgb(220,220,220)", font: "Bold 12px Sans-Serif" }, new go.Binding("text", "key")));
-            this.myFullDiagram.nodeTemplate = myNodeTemplate;
-            this.myFullDiagram.groupTemplate = $(go.Group, "Auto", {
-                layout: $(go.TreeLayout, { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false }),
-                isSubGraphExpanded: true
-            }, $(go.Shape, "Rectangle", { fill: null, stroke: "gray", strokeWidth: 2 }), $(go.Panel, "Vertical", { defaultAlignment: go.Spot.Center, margin: 4 }, $(go.Panel, "Horizontal", { defaultAlignment: go.Spot.Top }, $(go.TextBlock, { font: "Bold 12px Sans-Serif", alignment: go.Spot.Center, margin: 4, stroke: "white" }, new go.Binding("text", "text"))),
-            // create a placeholder to represent the area where the contents of the group are
-            $(go.Placeholder, { padding: new go.Margin(0, 10) })) // end Vertical Panel
-            ); // end Group
-            this.myFullDiagram.linkTemplate = $(go.Link, { corner: 10 }, $(go.Shape, { strokeWidth: 1, stroke: "white" }), $(go.Shape, { toArrow: "OpenTriangle", fill: "white", stroke: "white" }));
-            clearInterval(this.setupDiagramTimer);
-            this.setupDiagramTimer = setInterval(function () {
-                _this2.setupDiagram();
-            }.bind(this), 5000);
-            this.setupDiagram();
-        }
-    }, {
-        key: "setupDiagram",
-        value: function setupDiagram() {
-            var _this3 = this;
-
-            var urlBase = "http://" + this.panel.host + ":" + this.panel.port;
-            axios({
-                method: 'POST',
-                url: urlBase + "/api/Token",
-                data: {
-                    "User": this.panel.user,
-                    "Password": this.panel.password
-                },
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+    Ctrl.prototype.initDiagram = function () {
+        var _this = this;
+        if (window.goSamples) window.goSamples();
+        var $ = go.GraphObject.make;
+        this.myFullDiagram.div = undefined;
+        this.myFullDiagram = $(go.Diagram, "container", {
+            initialAutoScale: go.Diagram.UniformToFill,
+            maxScale: 1,
+            contentAlignment: go.Spot.Center,
+            "animationManager.isEnabled": false,
+            layout: $(go.TreeLayout, { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+            maxSelectionCount: 1
+        });
+        var myNodeTemplate = $(go.Node, "Vertical", { locationSpot: go.Spot.Center, locationObjectName: "SHAPE" }, new go.Binding("text", "key", go.Binding.toString), $(go.Shape, "Rectangle", { desiredSize: new go.Size(30, 30), name: "SHAPE", portId: "" }, new go.Binding("fill", "color"), { stroke: null }), $(go.TextBlock, { margin: 5, stroke: "rgb(220,220,220)", font: "Bold 12px Sans-Serif" }, new go.Binding("text", "key")));
+        this.myFullDiagram.nodeTemplate = myNodeTemplate;
+        this.myFullDiagram.groupTemplate = $(go.Group, "Auto", {
+            layout: $(go.TreeLayout, { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false }),
+            isSubGraphExpanded: true
+        }, $(go.Shape, "Rectangle", { fill: null, stroke: "gray", strokeWidth: 2 }), $(go.Panel, "Vertical", { defaultAlignment: go.Spot.Center, margin: 4 }, $(go.Panel, "Horizontal", { defaultAlignment: go.Spot.Top }, $(go.TextBlock, { font: "Bold 12px Sans-Serif", alignment: go.Spot.Center, margin: 4, stroke: "white" }, new go.Binding("text", "text"))),
+        // create a placeholder to represent the area where the contents of the group are
+        $(go.Placeholder, { padding: new go.Margin(0, 10) })) // end Vertical Panel
+        ); // end Group
+        this.myFullDiagram.linkTemplate = $(go.Link, { corner: 10 }, $(go.Shape, { strokeWidth: 1, stroke: "white" }), $(go.Shape, { toArrow: "OpenTriangle", fill: "white", stroke: "white" }));
+        clearInterval(this.setupDiagramTimer);
+        this.setupDiagramTimer = setInterval(function () {
+            _this.setupDiagram();
+        }.bind(this), 5000);
+        this.setupDiagram();
+    };
+    Ctrl.prototype.setupDiagram = function () {
+        var _this = this;
+        var urlBase = "http://" + this.panel.host + ":" + this.panel.port;
+        axios({
+            method: 'POST',
+            url: urlBase + "/api/Token",
+            data: {
+                "User": this.panel.user,
+                "Password": this.panel.password
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then(function (response) {
+            return axios.get(urlBase + "/api/Application?application=" + _this.panel.application + "&api_key=" + response.data);
+        }).then(function (response) {
+            var nodeDataArray = [];
+            var linkDataArray = [];
+            var groups = [];
+            response.data.forEach(function (component) {
+                if (groups.indexOf(component.GroupName) === -1) {
+                    groups.push(component.GroupName);
                 }
-            }).then(function (response) {
-                return axios.get(urlBase + "/api/Application?application=" + _this3.panel.application + "&api_key=" + response.data);
-            }).then(function (response) {
-                var nodeDataArray = [];
-                var linkDataArray = [];
-                var groups = [];
-                response.data.forEach(function (component) {
-                    if (groups.indexOf(component.GroupName) === -1) {
-                        groups.push(component.GroupName);
-                    }
-                    var node = {};
-                    node.key = component.Name;
-                    var stateColor = {
-                        "Stopped": "red",
-                        "Started": "green",
-                        "InError": "gray",
-                        "Starting": "Orange"
-                    };
-                    node.color = stateColor[component.State];
-                    node.group = component.GroupName + "_group";
-                    if (component.Parents.length > 0) {
-                        linkDataArray.push({ from: component.Parents[0], to: node.key });
-                    }
-                    nodeDataArray.push(node);
-                });
-                groups.forEach(function (group) {
-                    nodeDataArray.push({ key: group + "_group", text: group, isGroup: true });
-                });
-                _this3.myFullDiagram.model.nodeDataArray = nodeDataArray;
-                _this3.myFullDiagram.model.linkDataArray = linkDataArray;
-            }).catch(function (error) {
-                console.log(error);
+                var node = {};
+                node.key = component.Name;
+                var stateColor = {
+                    "Stopped": "red",
+                    "Started": "green",
+                    "InError": "gray",
+                    "Starting": "Orange"
+                };
+                node.color = stateColor[component.State];
+                node.group = component.GroupName + "_group";
+                if (component.Parents.length > 0) {
+                    linkDataArray.push({ from: component.Parents[0], to: node.key });
+                }
+                nodeDataArray.push(node);
             });
-        }
-    }, {
-        key: "onClick",
-        value: function onClick() {
-            this.initDiagram();
-        }
-    }, {
-        key: "_onInitEditMode",
-        value: function _onInitEditMode() {
-            var thisPartialPath = this._panelConfig.pluginDirName + 'partials/';
-            this.addEditorTab('Settings', thisPartialPath + 'settings.html', 2);
-        }
-    }]);
-
+            groups.forEach(function (group) {
+                nodeDataArray.push({ key: group + "_group", text: group, isGroup: true });
+            });
+            _this.myFullDiagram.model.nodeDataArray = nodeDataArray;
+            _this.myFullDiagram.model.linkDataArray = linkDataArray;
+        }).catch(function (error) {
+            console.log(error);
+        });
+    };
+    Ctrl.prototype.onClick = function () {
+        this.initDiagram();
+    };
+    Ctrl.prototype._onInitEditMode = function () {
+        var thisPartialPath = this._panelConfig.pluginDirName + 'partials/';
+        this.addEditorTab('Settings', thisPartialPath + 'settings.html', 2);
+    };
+    Ctrl.templateUrl = "partials/template.html";
     return Ctrl;
 }(sdk_1.PanelCtrl);
-
-Ctrl.templateUrl = "partials/template.html";
 exports.PanelCtrl = Ctrl;
 
 /***/ }),
@@ -224,31 +216,18 @@ exports.PanelCtrl = Ctrl;
 "use strict";
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 Object.defineProperty(exports, "__esModule", { value: true });
-
-var PanelConfig = function () {
+var PanelConfig = /** @class */function () {
     function PanelConfig(panel) {
-        _classCallCheck(this, PanelConfig);
-
         this._panel = panel;
     }
-
-    _createClass(PanelConfig, [{
-        key: "getValue",
-        value: function getValue(key) {
-            return this._panel[key];
-        }
-    }, {
-        key: "setValue",
-        value: function setValue(key, value) {
-            this._panel[key] = value;
-        }
-    }, {
-        key: "pluginDirName",
+    PanelConfig.prototype.getValue = function (key) {
+        return this._panel[key];
+    };
+    PanelConfig.prototype.setValue = function (key, value) {
+        this._panel[key] = value;
+    };
+    Object.defineProperty(PanelConfig.prototype, "pluginDirName", {
         get: function get() {
             if (!this._pluginDirName) {
                 var panels = window['grafanaBootData'].settings.panels;
@@ -258,12 +237,12 @@ var PanelConfig = function () {
                 this._pluginDirName = '../' + thisPanel.baseUrl + '/';
             }
             return this._pluginDirName;
-        }
-    }]);
-
+        },
+        enumerable: true,
+        configurable: true
+    });
     return PanelConfig;
 }();
-
 exports.PanelConfig = PanelConfig;
 
 /***/ }),
