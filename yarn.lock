@@ -6,10 +6,6 @@
   version "4.6.3"
   resolved "git+https://git@github.com/CorpGlory/types-grafana.git#2ce6e54491a247b9dbfe6b809e43daf2002e8260"
 
-"@types/lodash@^4.14.74":
-  version "4.14.116"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.116.tgz#5ccf215653e3e8c786a58390751033a9adca0eb9"
-
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"

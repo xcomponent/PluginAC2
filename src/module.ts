@@ -38,7 +38,7 @@ class Ctrl extends PanelCtrl {
     const $ = go.GraphObject.make;
     this.myFullDiagram.div = undefined;
     this.myFullDiagram =
-      $(go.Diagram, "full",
+      $(go.Diagram, "container",
         {
           initialAutoScale: go.Diagram.UniformToFill,
           maxScale: 1,

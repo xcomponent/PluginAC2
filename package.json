@@ -16,7 +16,6 @@
   "repository": "https://github.com/xcomponent/grafana-plugin-ac2",
   "devDependencies": {
     "@types/grafana": "git+https://git@github.com/CorpGlory/types-grafana.git",
-    "@types/lodash": "^4.14.74",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
