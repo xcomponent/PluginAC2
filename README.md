@@ -4,7 +4,6 @@
 To install this plugin using the `grafana-cli` tool:
 ```
 sudo grafana-cli plugins install grafana-ac2-plugin
-sudo service grafana-server restart
 ```
 
 ## Usage
