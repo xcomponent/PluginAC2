@@ -13,7 +13,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     libraryTarget: "amd"
   },
-  externals: function(context, request, callback) {
+  externals: function (context, request, callback) {
     var prefix = 'grafana/';
     if (request.indexOf(prefix) === 0) {
       return callback(null, request.substr(prefix.length));
@@ -39,15 +39,19 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/, 
+        test: /\.tsx?$/,
         loaders: [
           {
             loader: "babel-loader",
             options: { presets: ['env'] }
           },
           "ts-loader"
-        ], 
+        ],
         exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
       }
     ]
   }
