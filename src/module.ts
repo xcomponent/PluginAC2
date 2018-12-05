@@ -1,8 +1,9 @@
 import { PanelConfig } from './panel-config';
 import { PanelCtrl } from 'grafana/app/plugins/sdk';
 import * as _ from 'lodash';
-import * as go from '../node_modules/gojs/release/go';
-import * as axios from '../node_modules/axios/dist/axios';
+import * as go from 'gojs/release/go';
+import * as axios from 'axios/dist/axios';
+
 import './css/template.css';
 
 class Ctrl extends PanelCtrl {
