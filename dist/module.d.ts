@@ -3,13 +3,13 @@ import './css/template.css';
 declare class Ctrl extends PanelCtrl {
     static templateUrl: string;
     private panelDefaults;
-    private myFullDiagram;
-    private setupDiagramTimer;
+    private setupDiagramTimer?;
     private _panelConfig;
+    private map;
     constructor($scope: any, $injector: any);
-    initDiagram(): void;
+    restCall(): any;
     setupDiagram(): void;
-    onClick(): void;
+    onClickLoadButton(): void;
     _onInitEditMode(): void;
 }
 export { Ctrl as PanelCtrl };
