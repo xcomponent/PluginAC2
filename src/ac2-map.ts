@@ -1,10 +1,11 @@
 import * as go from 'gojs';
 
-export const stateColor = {
-    "Stopped": "red",
-    "Started": "green",
-    "InError": "gray",
-    "Starting": "Orange",
+export enum stateColor {
+    Stopped = "red",
+    Started = "green",
+    InError = "gray",
+    Starting = "Orange"
+
 };
 
 export interface NodeDataArrayItem {
@@ -20,20 +21,34 @@ export interface LinkDataArrayItem {
     to: string;
 }
 
+export interface AC2Data {
+    GroupName: string;
+    Name: string;
+    State: string;
+    Parents: string[];
+}
+
 export class AC2Map {
 
     private diagram: go.Diagram;
+    private containerId: string = "container";
 
     public init() {
-        this.diagram = this.getDiagramTemplate();
-        this.diagram.nodeTemplate = this.getNodeTemplate();
-        this.diagram.groupTemplate = this.getGroupTemplate()
-        this.diagram.linkTemplate = this.getLinkTemplate();
+        const $ = go.GraphObject.make;
+        this.diagram = this.getDiagramTemplate($);
+        this.diagram.nodeTemplate = this.getNodeTemplate($);
+        this.diagram.groupTemplate = this.getGroupTemplate($)
+        this.diagram.linkTemplate = this.getLinkTemplate($);
     }
 
-    private getDiagramTemplate() {
-        const $ = go.GraphObject.make;
-        return $(go.Diagram, "container",
+    public clear() {
+        if (this.diagram) {
+            this.diagram.div = null as any;
+        }
+    }
+
+    private getDiagramTemplate($) {
+        return $(go.Diagram, this.containerId,
             {
                 initialAutoScale: go.Diagram.UniformToFill,
                 maxScale: 1,
@@ -44,8 +59,7 @@ export class AC2Map {
             });
     }
 
-    private getNodeTemplate() {
-        const $ = go.GraphObject.make;
+    private getNodeTemplate($) {
         return $(go.Node, "Vertical",
             { locationSpot: go.Spot.Center, locationObjectName: "SHAPE" },
             new go.Binding("text", "key", go.Binding.toString),
@@ -56,8 +70,7 @@ export class AC2Map {
         );
     }
 
-    private getLinkTemplate() {
-        const $ = go.GraphObject.make;
+    private getLinkTemplate($) {
         return $(go.Link,
             { corner: 10 },
             $(go.Shape, { strokeWidth: 1, stroke: "white" }),
@@ -65,8 +78,7 @@ export class AC2Map {
         );
     }
 
-    private getGroupTemplate() {
-        const $ = go.GraphObject.make;
+    private getGroupTemplate($) {
         return $(go.Group, "Auto",
             {
                 layout: $(go.TreeLayout,
@@ -89,11 +101,11 @@ export class AC2Map {
         );
     }
 
-    public update(response) {
+    private getGoJsData(data: Array<AC2Data>) {
         const nodeDataArray: Array<NodeDataArrayItem> = [];
         const linkDataArray: Array<LinkDataArrayItem> = [];
         const groups: Array<string> = [];
-        response.data.forEach(component => {
+        data.forEach(component => {
             if (groups.indexOf(component.GroupName) === -1) {
                 groups.push(component.GroupName);
             }
@@ -110,6 +122,28 @@ export class AC2Map {
         groups.forEach(group => {
             nodeDataArray.push({ key: group + "_group", text: group, isGroup: true });
         });
-        this.diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+        return {
+            nodeDataArray,
+            linkDataArray
+        }
+    }
+
+    public draw(data: Array<AC2Data>) {
+        const goJsData = this.getGoJsData(data);
+        this.diagram.model = new go.GraphLinksModel(goJsData.nodeDataArray, goJsData.linkDataArray);
+    }
+
+    public update(data: Array<AC2Data>) {
+        const goJsData = this.getGoJsData(data);
+        this.diagram.model.applyIncrementalJson({
+            class: 'go.GraphLinksModel',
+            incremental: 1,
+            nodeKeyProperty: 'key',
+            linkKeyProperty: 'key',
+            linkFromPortIdProperty: '',
+            linkToPortIdProperty: '',
+            modifiedNodeData: goJsData.nodeDataArray,
+            modifiedLinkData: goJsData.linkDataArray
+        });
     }
 }

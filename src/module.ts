@@ -11,7 +11,7 @@ class Ctrl extends PanelCtrl {
   private panelDefaults = {
     host: "localhost",
     port: "7890",
-    application: "Servers,1.0.0",
+    application: "Servers,1.0.",
     user: "admin",
     password: "admin"
   };
@@ -19,6 +19,7 @@ class Ctrl extends PanelCtrl {
   private setupDiagramTimer?: number = undefined;
   private _panelConfig: PanelConfig;
   private map: AC2Map;
+  private isSameApplication: boolean;
 
   constructor($scope: any, $injector) {
     super($scope, $injector);
@@ -26,6 +27,11 @@ class Ctrl extends PanelCtrl {
     _.defaultsDeep(this.panel, this.panelDefaults);
     this.events.on('init-edit-mode', this._onInitEditMode.bind(this));
     this.map = new AC2Map();
+    this.isSameApplication = true;
+  }
+
+  inputChange() {
+    this.isSameApplication = false;
   }
 
   restCall() {
@@ -47,9 +53,9 @@ class Ctrl extends PanelCtrl {
       });
   }
 
-  setupDiagram() {
+  updateDiagram() {
     this.restCall()
-      .then(response => this.map.update(response))
+      .then(response => this.map.update(response.data))
       .catch(error => {
         console.error(error);
         const container = document.getElementById("container");
@@ -59,13 +65,37 @@ class Ctrl extends PanelCtrl {
       });
   }
 
+  drawDiagram() {
+    this.restCall()
+      .then(response => this.map.draw(response.data))
+      .catch(error => {
+        console.error(error);
+        const container = document.getElementById("container");
+        if (container) {
+          container.innerHTML = "Map display error";
+        }
+      });
+  }
+
+  showDiagram() {
+    if (!this.isSameApplication) {
+      this.isSameApplication = true;
+      this.map.clear();
+      this.map.init();
+      this.drawDiagram();
+    } else {
+      this.updateDiagram();
+    }
+
+  }
+
   onClickLoadButton() {
-    this.map.init();
+    this.showDiagram();
+
     clearInterval(this.setupDiagramTimer);
     this.setupDiagramTimer = setInterval((() => {
-      this.setupDiagram();
+      this.showDiagram();
     }).bind(this), 5000);
-    this.setupDiagram();
   }
 
   _onInitEditMode() {

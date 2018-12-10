@@ -6,9 +6,13 @@ declare class Ctrl extends PanelCtrl {
     private setupDiagramTimer?;
     private _panelConfig;
     private map;
+    private isSameApplication;
     constructor($scope: any, $injector: any);
+    inputChange(): void;
     restCall(): any;
-    setupDiagram(): void;
+    updateDiagram(): void;
+    drawDiagram(): void;
+    showDiagram(): void;
     onClickLoadButton(): void;
     _onInitEditMode(): void;
 }

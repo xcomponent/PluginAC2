@@ -103,7 +103,7 @@ var Ctrl = /** @class */function (_super) {
         _this.panelDefaults = {
             host: "localhost",
             port: "7890",
-            application: "Servers,1.0.0",
+            application: "Servers,1.0.",
             user: "admin",
             password: "admin"
         };
@@ -112,8 +112,13 @@ var Ctrl = /** @class */function (_super) {
         _.defaultsDeep(_this.panel, _this.panelDefaults);
         _this.events.on('init-edit-mode', _this._onInitEditMode.bind(_this));
         _this.map = new ac2_map_1.AC2Map();
+        _this.isSameApplication = true;
         return _this;
     }
+    Ctrl.prototype.inputChange = function () {
+        this.isSameApplication = false;
+        console.error(this.panel.application);
+    };
     Ctrl.prototype.restCall = function () {
         var _this = this;
         var urlBase = "http://" + this.panel.host + ":" + this.panel.port;
@@ -132,10 +137,10 @@ var Ctrl = /** @class */function (_super) {
             return axios.get(urlBase + "/api/Application?application=" + _this.panel.application + "&api_key=" + response.data);
         });
     };
-    Ctrl.prototype.setupDiagram = function () {
+    Ctrl.prototype.updateDiagram = function () {
         var _this = this;
         this.restCall().then(function (response) {
-            return _this.map.update(response);
+            return _this.map.update(response.data);
         }).catch(function (error) {
             console.error(error);
             var container = document.getElementById("container");
@@ -144,14 +149,35 @@ var Ctrl = /** @class */function (_super) {
             }
         });
     };
+    Ctrl.prototype.drawDiagram = function () {
+        var _this = this;
+        this.restCall().then(function (response) {
+            return _this.map.draw(response.data);
+        }).catch(function (error) {
+            console.error(error);
+            var container = document.getElementById("container");
+            if (container) {
+                container.innerHTML = "Map display error";
+            }
+        });
+    };
+    Ctrl.prototype.showDiagram = function () {
+        if (!this.isSameApplication) {
+            this.isSameApplication = true;
+            this.map.clear();
+            this.map.init();
+            this.drawDiagram();
+        } else {
+            this.updateDiagram();
+        }
+    };
     Ctrl.prototype.onClickLoadButton = function () {
         var _this = this;
-        this.map.init();
+        this.showDiagram();
         clearInterval(this.setupDiagramTimer);
         this.setupDiagramTimer = setInterval(function () {
-            _this.setupDiagram();
+            _this.showDiagram();
         }.bind(this), 5000);
-        this.setupDiagram();
     };
     Ctrl.prototype._onInitEditMode = function () {
         var thisPartialPath = this._panelConfig.pluginDirName + 'partials/';
@@ -19611,23 +19637,32 @@ module.exports = function (css) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var go = __webpack_require__(12);
-exports.stateColor = {
-    "Stopped": "red",
-    "Started": "green",
-    "InError": "gray",
-    "Starting": "Orange"
-};
+var stateColor;
+(function (stateColor) {
+    stateColor["Stopped"] = "red";
+    stateColor["Started"] = "green";
+    stateColor["InError"] = "gray";
+    stateColor["Starting"] = "Orange";
+})(stateColor = exports.stateColor || (exports.stateColor = {}));
+;
 var AC2Map = /** @class */function () {
-    function AC2Map() {}
+    function AC2Map() {
+        this.containerId = "container";
+    }
     AC2Map.prototype.init = function () {
-        this.diagram = this.getDiagramTemplate();
-        this.diagram.nodeTemplate = this.getNodeTemplate();
-        this.diagram.groupTemplate = this.getGroupTemplate();
-        this.diagram.linkTemplate = this.getLinkTemplate();
-    };
-    AC2Map.prototype.getDiagramTemplate = function () {
         var $ = go.GraphObject.make;
-        return $(go.Diagram, "container", {
+        this.diagram = this.getDiagramTemplate($);
+        this.diagram.nodeTemplate = this.getNodeTemplate($);
+        this.diagram.groupTemplate = this.getGroupTemplate($);
+        this.diagram.linkTemplate = this.getLinkTemplate($);
+    };
+    AC2Map.prototype.clear = function () {
+        if (this.diagram) {
+            this.diagram.div = null;
+        }
+    };
+    AC2Map.prototype.getDiagramTemplate = function ($) {
+        return $(go.Diagram, this.containerId, {
             initialAutoScale: go.Diagram.UniformToFill,
             maxScale: 1,
             contentAlignment: go.Spot.Center,
@@ -19636,32 +19671,29 @@ var AC2Map = /** @class */function () {
             maxSelectionCount: 1
         });
     };
-    AC2Map.prototype.getNodeTemplate = function () {
-        var $ = go.GraphObject.make;
+    AC2Map.prototype.getNodeTemplate = function ($) {
         return $(go.Node, "Vertical", { locationSpot: go.Spot.Center, locationObjectName: "SHAPE" }, new go.Binding("text", "key", go.Binding.toString), $(go.Shape, "Rectangle", { desiredSize: new go.Size(30, 30), name: "SHAPE", portId: "" }, new go.Binding("fill", "color"), { stroke: null }), $(go.TextBlock, { margin: 5, stroke: "rgb(220,220,220)", font: "Bold 12px Sans-Serif" }, new go.Binding("text", "key")));
     };
-    AC2Map.prototype.getLinkTemplate = function () {
-        var $ = go.GraphObject.make;
+    AC2Map.prototype.getLinkTemplate = function ($) {
         return $(go.Link, { corner: 10 }, $(go.Shape, { strokeWidth: 1, stroke: "white" }), $(go.Shape, { toArrow: "OpenTriangle", fill: "white", stroke: "white" }));
     };
-    AC2Map.prototype.getGroupTemplate = function () {
-        var $ = go.GraphObject.make;
+    AC2Map.prototype.getGroupTemplate = function ($) {
         return $(go.Group, "Auto", {
             layout: $(go.TreeLayout, { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false }),
             isSubGraphExpanded: true
         }, $(go.Shape, "Rectangle", { fill: null, stroke: "gray", strokeWidth: 2 }), $(go.Panel, "Vertical", { defaultAlignment: go.Spot.Center, margin: 4 }, $(go.Panel, "Horizontal", { defaultAlignment: go.Spot.Top }, $(go.TextBlock, { font: "Bold 12px Sans-Serif", alignment: go.Spot.Center, margin: 4, stroke: "white" }, new go.Binding("text", "text"))), $(go.Placeholder, { padding: new go.Margin(0, 10) })));
     };
-    AC2Map.prototype.update = function (response) {
+    AC2Map.prototype.getGoJsData = function (data) {
         var nodeDataArray = [];
         var linkDataArray = [];
         var groups = [];
-        response.data.forEach(function (component) {
+        data.forEach(function (component) {
             if (groups.indexOf(component.GroupName) === -1) {
                 groups.push(component.GroupName);
             }
             var node = {
                 key: component.Name,
-                color: exports.stateColor[component.State],
+                color: stateColor[component.State],
                 group: component.GroupName + "_group"
             };
             if (component.Parents.length > 0) {
@@ -19672,7 +19704,27 @@ var AC2Map = /** @class */function () {
         groups.forEach(function (group) {
             nodeDataArray.push({ key: group + "_group", text: group, isGroup: true });
         });
-        this.diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+        return {
+            nodeDataArray: nodeDataArray,
+            linkDataArray: linkDataArray
+        };
+    };
+    AC2Map.prototype.draw = function (data) {
+        var goJsData = this.getGoJsData(data);
+        this.diagram.model = new go.GraphLinksModel(goJsData.nodeDataArray, goJsData.linkDataArray);
+    };
+    AC2Map.prototype.update = function (data) {
+        var goJsData = this.getGoJsData(data);
+        this.diagram.model.applyIncrementalJson({
+            class: 'go.GraphLinksModel',
+            incremental: 1,
+            nodeKeyProperty: 'key',
+            linkKeyProperty: 'key',
+            linkFromPortIdProperty: '',
+            linkToPortIdProperty: '',
+            modifiedNodeData: goJsData.nodeDataArray,
+            modifiedLinkData: goJsData.linkDataArray
+        });
     };
     return AC2Map;
 }();
