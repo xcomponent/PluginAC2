@@ -53,9 +53,9 @@ class Ctrl extends PanelCtrl {
       });
   }
 
-  updateDiagram() {
+  setDiagram(isUpdate) {
     this.restCall()
-      .then(response => this.map.update(response.data))
+      .then(response => (isUpdate) ? this.map.update(response.data) : this.map.draw(response.data))
       .catch(error => {
         console.error(error);
         const container = document.getElementById("container");
@@ -63,18 +63,7 @@ class Ctrl extends PanelCtrl {
           container.innerHTML = "Map display error";
         }
       });
-  }
 
-  drawDiagram() {
-    this.restCall()
-      .then(response => this.map.draw(response.data))
-      .catch(error => {
-        console.error(error);
-        const container = document.getElementById("container");
-        if (container) {
-          container.innerHTML = "Map display error";
-        }
-      });
   }
 
   showDiagram() {
@@ -82,11 +71,10 @@ class Ctrl extends PanelCtrl {
       this.isSameApplication = true;
       this.map.clear();
       this.map.init();
-      this.drawDiagram();
+      this.setDiagram(false);
     } else {
-      this.updateDiagram();
+      this.setDiagram(true);
     }
-
   }
 
   onClickLoadButton() {
