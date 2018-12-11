@@ -117,7 +117,6 @@ var Ctrl = /** @class */function (_super) {
     }
     Ctrl.prototype.inputChange = function () {
         this.isSameApplication = false;
-        console.error(this.panel.application);
     };
     Ctrl.prototype.restCall = function () {
         var _this = this;
@@ -137,22 +136,10 @@ var Ctrl = /** @class */function (_super) {
             return axios.get(urlBase + "/api/Application?application=" + _this.panel.application + "&api_key=" + response.data);
         });
     };
-    Ctrl.prototype.updateDiagram = function () {
+    Ctrl.prototype.setDiagram = function (isUpdate) {
         var _this = this;
         this.restCall().then(function (response) {
-            return _this.map.update(response.data);
-        }).catch(function (error) {
-            console.error(error);
-            var container = document.getElementById("container");
-            if (container) {
-                container.innerHTML = "Map display error";
-            }
-        });
-    };
-    Ctrl.prototype.drawDiagram = function () {
-        var _this = this;
-        this.restCall().then(function (response) {
-            return _this.map.draw(response.data);
+            return isUpdate ? _this.map.update(response.data) : _this.map.draw(response.data);
         }).catch(function (error) {
             console.error(error);
             var container = document.getElementById("container");
@@ -166,9 +153,9 @@ var Ctrl = /** @class */function (_super) {
             this.isSameApplication = true;
             this.map.clear();
             this.map.init();
-            this.drawDiagram();
+            this.setDiagram(false);
         } else {
-            this.updateDiagram();
+            this.setDiagram(true);
         }
     };
     Ctrl.prototype.onClickLoadButton = function () {
@@ -19648,40 +19635,41 @@ var stateColor;
 var AC2Map = /** @class */function () {
     function AC2Map() {
         this.containerId = "container";
+        this.$ = go.GraphObject.make;
     }
     AC2Map.prototype.init = function () {
-        var $ = go.GraphObject.make;
-        this.diagram = this.getDiagramTemplate($);
-        this.diagram.nodeTemplate = this.getNodeTemplate($);
-        this.diagram.groupTemplate = this.getGroupTemplate($);
-        this.diagram.linkTemplate = this.getLinkTemplate($);
+        this.diagram = this.getDiagramTemplate();
+        this.diagram.nodeTemplate = this.getNodeTemplate();
+        this.diagram.groupTemplate = this.getGroupTemplate();
+        this.diagram.linkTemplate = this.getLinkTemplate();
     };
     AC2Map.prototype.clear = function () {
         if (this.diagram) {
+            // this.diagram.clear();
             this.diagram.div = null;
         }
     };
-    AC2Map.prototype.getDiagramTemplate = function ($) {
-        return $(go.Diagram, this.containerId, {
+    AC2Map.prototype.getDiagramTemplate = function () {
+        return this.$(go.Diagram, this.containerId, {
             initialAutoScale: go.Diagram.UniformToFill,
             maxScale: 1,
             contentAlignment: go.Spot.Center,
             "animationManager.isEnabled": false,
-            layout: $(go.TreeLayout, { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+            layout: this.$(go.TreeLayout, { angle: 90, sorting: go.TreeLayout.SortingAscending }),
             maxSelectionCount: 1
         });
     };
-    AC2Map.prototype.getNodeTemplate = function ($) {
-        return $(go.Node, "Vertical", { locationSpot: go.Spot.Center, locationObjectName: "SHAPE" }, new go.Binding("text", "key", go.Binding.toString), $(go.Shape, "Rectangle", { desiredSize: new go.Size(30, 30), name: "SHAPE", portId: "" }, new go.Binding("fill", "color"), { stroke: null }), $(go.TextBlock, { margin: 5, stroke: "rgb(220,220,220)", font: "Bold 12px Sans-Serif" }, new go.Binding("text", "key")));
+    AC2Map.prototype.getNodeTemplate = function () {
+        return this.$(go.Node, "Vertical", { locationSpot: go.Spot.Center, locationObjectName: "SHAPE" }, new go.Binding("text", "key", go.Binding.toString), this.$(go.Shape, "Rectangle", { desiredSize: new go.Size(30, 30), name: "SHAPE", portId: "" }, new go.Binding("fill", "color"), { stroke: null }), this.$(go.TextBlock, { margin: 5, stroke: "rgb(220,220,220)", font: "Bold 12px Sans-Serif" }, new go.Binding("text", "key")));
     };
-    AC2Map.prototype.getLinkTemplate = function ($) {
-        return $(go.Link, { corner: 10 }, $(go.Shape, { strokeWidth: 1, stroke: "white" }), $(go.Shape, { toArrow: "OpenTriangle", fill: "white", stroke: "white" }));
+    AC2Map.prototype.getLinkTemplate = function () {
+        return this.$(go.Link, { corner: 10 }, this.$(go.Shape, { strokeWidth: 1, stroke: "white" }), this.$(go.Shape, { toArrow: "OpenTriangle", fill: "white", stroke: "white" }));
     };
-    AC2Map.prototype.getGroupTemplate = function ($) {
-        return $(go.Group, "Auto", {
-            layout: $(go.TreeLayout, { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false }),
+    AC2Map.prototype.getGroupTemplate = function () {
+        return this.$(go.Group, "Auto", {
+            layout: this.$(go.TreeLayout, { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false }),
             isSubGraphExpanded: true
-        }, $(go.Shape, "Rectangle", { fill: null, stroke: "gray", strokeWidth: 2 }), $(go.Panel, "Vertical", { defaultAlignment: go.Spot.Center, margin: 4 }, $(go.Panel, "Horizontal", { defaultAlignment: go.Spot.Top }, $(go.TextBlock, { font: "Bold 12px Sans-Serif", alignment: go.Spot.Center, margin: 4, stroke: "white" }, new go.Binding("text", "text"))), $(go.Placeholder, { padding: new go.Margin(0, 10) })));
+        }, this.$(go.Shape, "Rectangle", { fill: null, stroke: "gray", strokeWidth: 2 }), this.$(go.Panel, "Vertical", { defaultAlignment: go.Spot.Center, margin: 4 }, this.$(go.Panel, "Horizontal", { defaultAlignment: go.Spot.Top }, this.$(go.TextBlock, { font: "Bold 12px Sans-Serif", alignment: go.Spot.Center, margin: 4, stroke: "white" }, new go.Binding("text", "text"))), this.$(go.Placeholder, { padding: new go.Margin(0, 10) })));
     };
     AC2Map.prototype.getGoJsData = function (data) {
         var nodeDataArray = [];
@@ -19713,8 +19701,44 @@ var AC2Map = /** @class */function () {
         var goJsData = this.getGoJsData(data);
         this.diagram.model = new go.GraphLinksModel(goJsData.nodeDataArray, goJsData.linkDataArray);
     };
+    AC2Map.prototype.applyAddRemoveNodesFromModel = function (nodeDataArray) {
+        var _this = this;
+        var nodesToAdd = nodeDataArray.filter(function (e) {
+            return _this.diagram.model.nodeDataArray.findIndex(function (el) {
+                return el.key === e.key;
+            }) === -1;
+        }).map(function (node) {
+            return Object.assign({}, node);
+        });
+        this.diagram.model.addNodeDataCollection(nodesToAdd);
+        var nodesToRemove = this.diagram.model.nodeDataArray.filter(function (e) {
+            return nodeDataArray.findIndex(function (el) {
+                return el.key === e.key;
+            }) === -1;
+        });
+        this.diagram.model.removeNodeDataCollection(nodesToRemove);
+    };
+    AC2Map.prototype.applyAddRemoveLinksFromModel = function (linkDataArray) {
+        var _this = this;
+        var linksToAdd = linkDataArray.filter(function (e) {
+            return _this.diagram.model.linkDataArray.findIndex(function (el) {
+                return el.from === e.from && el.to === e.to;
+            }) === -1;
+        }).map(function (link) {
+            return Object.assign({}, link);
+        });
+        this.diagram.model.addLinkDataCollection(linksToAdd);
+        var linksToRemove = this.diagram.model.linkDataArray.filter(function (e) {
+            return linkDataArray.findIndex(function (el) {
+                return el.from === e.from && el.to === e.to;
+            }) === -1;
+        });
+        this.diagram.model.removeLinkDataCollection(linksToRemove);
+    };
     AC2Map.prototype.update = function (data) {
         var goJsData = this.getGoJsData(data);
+        this.applyAddRemoveNodesFromModel(goJsData.nodeDataArray);
+        this.applyAddRemoveLinksFromModel(goJsData.linkDataArray);
         this.diagram.model.applyIncrementalJson({
             class: 'go.GraphLinksModel',
             incremental: 1,

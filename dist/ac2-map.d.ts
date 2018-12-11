@@ -24,6 +24,7 @@ export interface AC2Data {
 export declare class AC2Map {
     private diagram;
     private containerId;
+    private $;
     init(): void;
     clear(): void;
     private getDiagramTemplate;
@@ -32,5 +33,7 @@ export declare class AC2Map {
     private getGroupTemplate;
     private getGoJsData;
     draw(data: Array<AC2Data>): void;
+    private applyAddRemoveNodesFromModel;
+    private applyAddRemoveLinksFromModel;
     update(data: Array<AC2Data>): void;
 }

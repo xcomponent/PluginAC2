@@ -32,13 +32,14 @@ export class AC2Map {
 
     private diagram: go.Diagram;
     private containerId: string = "container";
+    private $ = go.GraphObject.make;
+
 
     public init() {
-        const $ = go.GraphObject.make;
-        this.diagram = this.getDiagramTemplate($);
-        this.diagram.nodeTemplate = this.getNodeTemplate($);
-        this.diagram.groupTemplate = this.getGroupTemplate($)
-        this.diagram.linkTemplate = this.getLinkTemplate($);
+        this.diagram = this.getDiagramTemplate();
+        this.diagram.nodeTemplate = this.getNodeTemplate();
+        this.diagram.groupTemplate = this.getGroupTemplate()
+        this.diagram.linkTemplate = this.getLinkTemplate();
     }
 
     public clear() {
@@ -47,55 +48,55 @@ export class AC2Map {
         }
     }
 
-    private getDiagramTemplate($) {
-        return $(go.Diagram, this.containerId,
+    private getDiagramTemplate() {
+        return this.$(go.Diagram, this.containerId,
             {
                 initialAutoScale: go.Diagram.UniformToFill,
                 maxScale: 1,
                 contentAlignment: go.Spot.Center,
                 "animationManager.isEnabled": false,
-                layout: $(go.TreeLayout, { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+                layout: this.$(go.TreeLayout, { angle: 90, sorting: go.TreeLayout.SortingAscending }),
                 maxSelectionCount: 1
             });
     }
 
-    private getNodeTemplate($) {
-        return $(go.Node, "Vertical",
+    private getNodeTemplate() {
+        return this.$(go.Node, "Vertical",
             { locationSpot: go.Spot.Center, locationObjectName: "SHAPE" },
             new go.Binding("text", "key", go.Binding.toString),
-            $(go.Shape, "Rectangle", { desiredSize: new go.Size(30, 30), name: "SHAPE", portId: "" },
+            this.$(go.Shape, "Rectangle", { desiredSize: new go.Size(30, 30), name: "SHAPE", portId: "" },
                 new go.Binding("fill", "color"),
                 { stroke: null }),
-            $(go.TextBlock, { margin: 5, stroke: "rgb(220,220,220)", font: "Bold 12px Sans-Serif" }, new go.Binding("text", "key"))
+            this.$(go.TextBlock, { margin: 5, stroke: "rgb(220,220,220)", font: "Bold 12px Sans-Serif" }, new go.Binding("text", "key"))
         );
     }
 
-    private getLinkTemplate($) {
-        return $(go.Link,
+    private getLinkTemplate() {
+        return this.$(go.Link,
             { corner: 10 },
-            $(go.Shape, { strokeWidth: 1, stroke: "white" }),
-            $(go.Shape, { toArrow: "OpenTriangle", fill: "white", stroke: "white" })
+            this.$(go.Shape, { strokeWidth: 1, stroke: "white" }),
+            this.$(go.Shape, { toArrow: "OpenTriangle", fill: "white", stroke: "white" })
         );
     }
 
-    private getGroupTemplate($) {
-        return $(go.Group, "Auto",
+    private getGroupTemplate() {
+        return this.$(go.Group, "Auto",
             {
-                layout: $(go.TreeLayout,
+                layout: this.$(go.TreeLayout,
                     { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false, }),
                 isSubGraphExpanded: true,
             },
-            $(go.Shape, "Rectangle",
+            this.$(go.Shape, "Rectangle",
                 { fill: null, stroke: "gray", strokeWidth: 2 }),
-            $(go.Panel, "Vertical",
+            this.$(go.Panel, "Vertical",
                 { defaultAlignment: go.Spot.Center, margin: 4 },
-                $(go.Panel, "Horizontal",
+                this.$(go.Panel, "Horizontal",
                     { defaultAlignment: go.Spot.Top },
-                    $(go.TextBlock,
+                    this.$(go.TextBlock,
                         { font: "Bold 12px Sans-Serif", alignment: go.Spot.Center, margin: 4, stroke: "white" },
                         new go.Binding("text", "text"))
                 ),
-                $(go.Placeholder,
+                this.$(go.Placeholder,
                     { padding: new go.Margin(0, 10) })
             )
         );
@@ -133,8 +134,38 @@ export class AC2Map {
         this.diagram.model = new go.GraphLinksModel(goJsData.nodeDataArray, goJsData.linkDataArray);
     }
 
+    private applyAddRemoveNodesFromModel(nodeDataArray) {
+        const nodesToAdd = nodeDataArray
+            .filter(e => this.diagram.model.nodeDataArray.findIndex((el: NodeDataArrayItem) => el.key === e.key) === -1)
+            .map(node => Object.assign({}, node));
+        this.diagram.model.addNodeDataCollection(nodesToAdd);
+        const nodesToRemove = this.diagram.model.nodeDataArray.filter(
+            (e: NodeDataArrayItem) => nodeDataArray.findIndex(el => el.key === e.key) === -1
+        );
+        this.diagram.model.removeNodeDataCollection(nodesToRemove);
+    }
+
+    private applyAddRemoveLinksFromModel(linkDataArray) {
+        const linksToAdd = linkDataArray
+            .filter(
+                e =>
+                    (this.diagram.model as any).linkDataArray.findIndex(
+                        (el: LinkDataArrayItem) => el.from === e.from && el.to === e.to
+                    ) === -1
+            )
+            .map(link => Object.assign({}, link));
+        (this.diagram.model as any).addLinkDataCollection(linksToAdd);
+        const linksToRemove = (this.diagram.model as any).linkDataArray.filter(
+            (e: LinkDataArrayItem) =>
+                linkDataArray.findIndex(el => el.from === e.from && el.to === e.to) === -1
+        );
+        (this.diagram.model as any).removeLinkDataCollection(linksToRemove);
+    }
+
     public update(data: Array<AC2Data>) {
         const goJsData = this.getGoJsData(data);
+        this.applyAddRemoveNodesFromModel(goJsData.nodeDataArray);
+        this.applyAddRemoveLinksFromModel(goJsData.linkDataArray);
         this.diagram.model.applyIncrementalJson({
             class: 'go.GraphLinksModel',
             incremental: 1,
@@ -146,4 +177,5 @@ export class AC2Map {
             modifiedLinkData: goJsData.linkDataArray
         });
     }
+
 }

@@ -10,8 +10,7 @@ declare class Ctrl extends PanelCtrl {
     constructor($scope: any, $injector: any);
     inputChange(): void;
     restCall(): any;
-    updateDiagram(): void;
-    drawDiagram(): void;
+    setDiagram(isUpdate: any): void;
     showDiagram(): void;
     onClickLoadButton(): void;
     _onInitEditMode(): void;
