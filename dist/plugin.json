@@ -1,14 +1,14 @@
 {
   "type": "panel",
   "name": "AC2",
-  "id": "grafana-ac2-plugin",
+  "id": "xcomponet-ac2-panel",
   "info": {
-    "description": "AC2 panel for grafana",
+    "description": "AC2 screener panel for grafana",
     "author": {
       "name": "xcomponent",
-      "url": "http://xcomponent.com"
+      "url": "https://github.com/xcomponent/grafana-plugin-ac2"
     },
-    "keywords": ["ac2", "panel"],
+    "keywords": ["xcomponent", "ac2", "panel"],
     "logos": {
       "small": "assets/ac2.ico",
       "large": "assets/ac2.ico"
@@ -17,8 +17,8 @@
       "name": "Main",
       "path": "assets/plugin_screen.png"
     }],
-    "version": "0.1.1",
-    "updated": "2018-10-04"
+    "version": "1.0.0",
+    "updated": "2018-12-13"
   },
   "dependencies": {
     "grafanaVersion": "4.1.1",

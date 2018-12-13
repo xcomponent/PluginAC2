@@ -9,11 +9,11 @@ class Ctrl extends PanelCtrl {
   static templateUrl = "partials/template.html";
 
   private panelDefaults = {
-    host: "localhost",
-    port: "7890",
-    application: "Servers,1.0.",
-    user: "admin",
-    password: "admin"
+    host: "",
+    port: "",
+    application: "",
+    user: "",
+    password: ""
   };
 
   private setupDiagramTimer?: number = undefined;

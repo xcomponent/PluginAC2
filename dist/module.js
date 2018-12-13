@@ -101,11 +101,11 @@ var Ctrl = /** @class */function (_super) {
     function Ctrl($scope, $injector) {
         var _this = _super.call(this, $scope, $injector) || this;
         _this.panelDefaults = {
-            host: "localhost",
-            port: "7890",
-            application: "Servers,1.0.",
-            user: "admin",
-            password: "admin"
+            host: "",
+            port: "",
+            application: "",
+            user: "",
+            password: ""
         };
         _this.setupDiagramTimer = undefined;
         _this._panelConfig = new panel_config_1.PanelConfig(_this.panel);
@@ -19645,7 +19645,6 @@ var AC2Map = /** @class */function () {
     };
     AC2Map.prototype.clear = function () {
         if (this.diagram) {
-            // this.diagram.clear();
             this.diagram.div = null;
         }
     };
