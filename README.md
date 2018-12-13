@@ -3,7 +3,7 @@
 ## Installation
 To install this plugin using the `grafana-cli` tool:
 ```
-sudo grafana-cli plugins install grafana-ac2-plugin
+sudo grafana-cli plugins install xcomponet-ac2-panel
 ```
 
 ## Usage
@@ -11,4 +11,4 @@ sudo grafana-cli plugins install grafana-ac2-plugin
 * No need to create a grafana datasource
 * Fill the settings form with the right information to view the AC2 map application
 
-<img src="./src/assets/plugin_screen.png" alt="drawing" width="90%"/>
+![ac2](https://raw.githubusercontent.com/xcomponent/grafana-plugin-ac2/master/src/assets/plugin_screen.png)
