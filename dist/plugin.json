@@ -1,7 +1,7 @@
 {
   "type": "panel",
   "name": "AC2",
-  "id": "xcomponet-ac2-panel",
+  "id": "xcomponent-ac2-panel",
   "info": {
     "description": "AC2 screener panel for grafana",
     "author": {
