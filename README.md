@@ -3,7 +3,7 @@
 ## Installation
 To install this plugin using the `grafana-cli` tool:
 ```
-sudo grafana-cli plugins install xcomponet-ac2-panel
+sudo grafana-cli plugins install xcomponent-ac2-panel
 ```
 
 ## Usage
